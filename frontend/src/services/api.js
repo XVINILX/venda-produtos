@@ -3,7 +3,7 @@ import axios from "axios";
 // Configuração base da API
 const API_BASE_URL = "http://localhost:8000"; // Ajuste se seu backend estiver em outra porta
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000, // 10 segundos de timeout
   headers: {
