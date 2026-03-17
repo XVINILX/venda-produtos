@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from src.database import Base
-from src.models import User
+from src.models import User, product
 
 
 config = context.config
