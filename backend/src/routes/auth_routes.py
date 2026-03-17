@@ -1,8 +1,7 @@
-# backend/src/routes/auth_routes.py
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, status
 from src.schemas.auth_schemas import (
     UserCreate, UserLogin, UserResponse, 
-    TokenResponse, UserProfileResponse
+    TokenResponse
 )
 from src.services.auth_service import AuthService
 from typing import List
@@ -29,7 +28,7 @@ async def register(user_data: UserCreate):
     user = auth_service.register_user(
         email=user_data.email,
         password=user_data.password,
-        full_name=user_data.full_name
+        name=user_data.name
     )
     return user
 

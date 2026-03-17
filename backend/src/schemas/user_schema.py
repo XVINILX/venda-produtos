@@ -47,10 +47,7 @@ class UserResponse(BaseModel):
             }
         }
 
-class UserProfileResponse(UserResponse):
-    """Schema para perfil completo"""
-    created_at: Optional[str] = Field(None, description="Data de criação")
-    updated_at: Optional[str] = Field(None, description="Data de atualização")
+
 
 class TokenResponse(BaseModel):
     """Schema para resposta de token"""

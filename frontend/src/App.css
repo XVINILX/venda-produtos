@@ -1,0 +1,20 @@
+/* frontend/src/App.css */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.footer {
+  background-color: white;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 0;
+  margin-top: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
