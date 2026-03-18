@@ -1,15 +1,44 @@
 // frontend/src/components/Layout/Navbar.jsx
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, Package, Home } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  ShoppingCart,
+  Package,
+  Home,
+  User,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 import { useCart } from "../../contexts/CartContext";
+import { useAuth } from "../../contexts/AuthContext";
 import "./Navbar.css";
 
 const Navbar = () => {
-  const location = useLocation();
   const { cart } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   const totalItems = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    setShowDropdown(false);
+  };
 
   return (
     <nav className="navbar">
@@ -20,22 +49,60 @@ const Navbar = () => {
         </Link>
 
         <div className="navbar-menu">
-          <Link
-            to="/"
-            className={`navbar-link ${location.pathname === "/" ? "active" : ""}`}
-          >
-            <Home />
+          <Link to="/" className="navbar-link">
+            <Home size={20} />
             <span>Catálogo</span>
           </Link>
 
-          <Link
-            to="/cart"
-            className={`navbar-link ${location.pathname === "/cart" ? "active" : ""}`}
-          >
-            <ShoppingCart />
+          <Link to="/cart" className="navbar-link">
+            <ShoppingCart size={20} />
             <span>Carrinho</span>
             {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
           </Link>
+
+          {isAuthenticated() ? (
+            <div className="user-menu" ref={dropdownRef}>
+              <button
+                className="user-button"
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                <User size={20} />
+                <span>{user?.name?.split(" ")[0]}</span>
+                <ChevronDown size={16} />
+              </button>
+
+              {showDropdown && (
+                <div className="user-dropdown">
+                  <div className="dropdown-header">
+                    <strong>{user?.name}</strong>
+                    <small>{user?.email}</small>
+                  </div>
+                  <div className="dropdown-divider"></div>
+                  <Link to="/profile" className="dropdown-item">
+                    <User size={16} />
+                    Meu Perfil
+                  </Link>
+                  <Link to="/orders" className="dropdown-item">
+                    <Package size={16} />
+                    Meus Pedidos
+                  </Link>
+                  <div className="dropdown-divider"></div>
+                  <button
+                    onClick={handleLogout}
+                    className="dropdown-item logout"
+                  >
+                    <LogOut size={16} />
+                    Sair
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/login" className="navbar-link login-btn">
+              <User size={20} />
+              <span>Entrar</span>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

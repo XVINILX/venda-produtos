@@ -12,7 +12,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 auth_service = AuthService()
 
 @router.post(
-    "/register",
+    "/register/",
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Registrar novo usuário"
@@ -33,7 +33,7 @@ async def register(user_data: UserCreate):
     return user
 
 @router.post(
-    "/login",
+    "/login/",
     response_model=TokenResponse,
     summary="Login de usuário"
 )

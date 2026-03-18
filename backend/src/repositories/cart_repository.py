@@ -1,4 +1,6 @@
 # backend/src/repositories/cart_repository.py
+from decimal import Decimal
+
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from typing import Optional, Dict, List
@@ -32,7 +34,17 @@ class CartRepository:
         with self._get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute(query)
-                return [dict(row) for row in cur.fetchall()]
+                results = cur.fetchall()
+                # Converter Decimals para float
+                items = []
+                for row in results:
+                    item = dict(row)
+                    if 'unit_price' in item and isinstance(item['unit_price'], Decimal):
+                        item['unit_price'] = float(item['unit_price'])
+                    if 'subtotal' in item and isinstance(item['subtotal'], Decimal):
+                        item['subtotal'] = float(item['subtotal'])
+                    items.append(item)
+                return items
     
     def get_cart_item(self, item_id: int) -> Optional[Dict]:
         """Busca um item específico do carrinho"""

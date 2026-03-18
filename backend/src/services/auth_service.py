@@ -1,9 +1,11 @@
 # backend/src/services/auth_service.py
 from passlib.context import CryptContext
 from typing import List, Optional, Dict
+from src.auth.jwt_handler import create_access_token, create_refresh_token
 from src.auth.password import hash_password, verify_password
 from src.repositories.user_repository import UserRepository
 from fastapi import HTTPException, status
+from src.config import settings
 
 # Configuração do hash de senhas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -66,11 +68,19 @@ class AuthService:
             )
         
         # Gerar token (simplificado para exemplo)
-        token = f"token_ficticio_{user['id']}"
+        access_token = create_access_token({
+            "sub": str(user["id"]),
+            "email": user["email"],
+            "name": user["name"]
+        })
+        
+        refresh_token = create_refresh_token(user["id"])
         
         return {
-            "access_token": token,
+            "access_token": access_token,
+            "refresh_token": refresh_token,
             "token_type": "bearer",
+            "expires_in": settings.access_token_expire_minutes * 60,  # em segundos
             "user": {
                 "id": user["id"],
                 "email": user["email"],

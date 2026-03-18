@@ -36,7 +36,7 @@ export const logoutUser = () => {
  */
 export const registerUser = async (userData) => {
   try {
-    const response = await api.post("/auth/register", userData);
+    const response = await api.post("/auth/register/", userData);
     return response.data;
   } catch (error) {
     console.error("Erro ao registrar usuário:", error);
@@ -53,7 +53,7 @@ export const registerUser = async (userData) => {
 export const loginUser = async (email, password) => {
   try {
     // Tentar formato JSON primeiro
-    const response = await api.post("/auth/login/json", {
+    const response = await api.post("/auth/login/", {
       email: email,
       password: password,
     });
@@ -66,26 +66,6 @@ export const loginUser = async (email, password) => {
     return response.data;
   } catch (error) {
     // Se falhar, tentar formato form-data (OAuth2)
-    if (error.response?.status === 404) {
-      try {
-        const formData = new FormData();
-        formData.append("username", email);
-        formData.append("password", password);
-
-        const response = await api.post("/auth/login", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        if (response.data.access_token) {
-          localStorage.setItem("auth_token", response.data.access_token);
-        }
-
-        return response.data;
-      } catch (secondError) {
-        console.error("Erro no login:", secondError);
-        throw secondError;
-      }
-    }
 
     console.error("Erro no login:", error);
     throw error;
