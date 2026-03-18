@@ -1,6 +1,7 @@
 // frontend/src/contexts/CartContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
 import * as api from "../services/api";
+import { addToCart } from "../services/cart.service";
 
 const CartContext = createContext();
 
@@ -58,7 +59,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const updatedCart = await api.addToCart(productId, quantity);
+      const updatedCart = await addToCart(productId, quantity);
       setCart(updatedCart);
     } catch (err) {
       setError("Erro ao adicionar item");

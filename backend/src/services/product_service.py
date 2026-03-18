@@ -138,7 +138,7 @@ class ProductService:
         """
         products = self.product_repo.get_products()
         categories = sorted(list(set(p['category'] for p in products)))
-        return categories
+        return {'categories': categories}
     
     def get_products_by_category(self, category: str) -> List[Dict]:
         """

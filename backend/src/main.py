@@ -1,7 +1,8 @@
 # backend/src/main.py
 from fastapi import FastAPI
-from backend.src.routes import cart_routes, product_routes
+from src.routes import cart_routes, product_routes
 from src.routes import auth_routes
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Wise Sales API",
@@ -19,6 +20,20 @@ app = FastAPI(
         "name": "Wise Sales",
         "email": "dev@wisesales.com"
     }
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",  # Vite default port
+        "http://localhost:3000",  # React default port
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos os métodos (GET, POST, PUT, DELETE, etc)
+    allow_headers=["*"],  # Permite todos os headers
+    expose_headers=["*"],
 )
 
 # Incluir rotas

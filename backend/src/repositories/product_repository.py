@@ -20,7 +20,7 @@ class ProductRepository:
         """Busca produtos com filtro opcional por categoria"""
         if category:
             query = """
-                SELECT id, name, description, price, category, stock, image_url
+                SELECT id, name, price, category, stock, image_url
                 FROM products 
                 WHERE category = %s AND stock > 0
                 ORDER BY id
@@ -28,7 +28,7 @@ class ProductRepository:
             params = (category,)
         else:
             query = """
-                SELECT id, name, description, price, category, stock, image_url
+                SELECT id, name, price, category, stock, image_url
                 FROM products 
                 WHERE stock > 0
                 ORDER BY id
@@ -44,7 +44,7 @@ class ProductRepository:
     def get_product_by_id(self, product_id: int) -> Optional[Dict]:
         """Busca produto por ID"""
         query = """
-            SELECT id, name, description, price, category, stock, image_url
+            SELECT id, name, price, category, stock, image_url
             FROM products 
             WHERE id = %s
         """

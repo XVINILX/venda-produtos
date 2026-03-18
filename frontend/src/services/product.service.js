@@ -3,7 +3,7 @@ import api from "./api";
 export const getProducts = async (category = null) => {
   const url = category
     ? `/products?category=${encodeURIComponent(category)}`
-    : "/products";
+    : "/products/";
   const response = await api.get(url);
   return response.data;
 };
@@ -14,7 +14,7 @@ export const getProduct = async (id) => {
 };
 
 export const getCategories = async () => {
-  const response = await api.get("/products/categories");
+  const response = await api.get("/products/categories/");
   return response.data.categories;
 };
 

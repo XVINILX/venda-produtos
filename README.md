@@ -59,11 +59,11 @@ DB_PASSWORD=wisesales123
 
 ### O que já vem pronto
 
-| Arquivo | O que faz |
-|---------|-----------|
-| `docker-compose.yml` | Sobe PostgreSQL 16 com seed automático |
-| `seed.sql` | Cria tabelas e insere produtos + cupons |
-| `.env.example` | Credenciais do banco |
+| Arquivo              | O que faz                               |
+| -------------------- | --------------------------------------- |
+| `docker-compose.yml` | Sobe PostgreSQL 16 com seed automático  |
+| `seed.sql`           | Cria tabelas e insere produtos + cupons |
+| `.env.example`       | Credenciais do banco                    |
 
 ### O que você precisa criar
 
@@ -178,14 +178,14 @@ React + Vite, SPA, JavaScript (sem TypeScript), Tailwind CSS.
 
 ## Critérios de avaliação
 
-| Critério | Peso |
-|----------|------|
-| Funcionamento end-to-end (API + Frontend) | 25% |
-| Qualidade do código (backend e frontend) | 25% |
-| Modelagem de dados e lógica de negócio | 15% |
-| Experiência do usuário (usabilidade) | 15% |
-| Testes (pytest + Vitest) | 10% |
-| README e documentação | 10% |
+| Critério                                  | Peso |
+| ----------------------------------------- | ---- |
+| Funcionamento end-to-end (API + Frontend) | 25%  |
+| Qualidade do código (backend e frontend)  | 25%  |
+| Modelagem de dados e lógica de negócio    | 15%  |
+| Experiência do usuário (usabilidade)      | 15%  |
+| Testes (pytest + Vitest)                  | 10%  |
+| README e documentação                     | 10%  |
 
 ---
 
@@ -217,24 +217,28 @@ Over-engineering para o escopo proposto. Código sem tratamento de erros. Reposi
 
 ## Rubrica de avaliação
 
-| Nota | Classificação | Descrição |
-|------|--------------|-----------|
-| 9-10 | Excelente | Atende todos os requisitos, implementa diferenciais, código exemplar |
-| 7-8 | Bom | Atende os requisitos principais, código organizado, poucas falhas |
-| 5-6 | Satisfatório | Funciona parcialmente, organização básica, precisa de melhorias |
-| 3-4 | Insuficiente | Muitas falhas, código desorganizado, requisitos principais incompletos |
-| 0-2 | Eliminatório | Não funciona, plágio evidente, ou entrega vazia |
+| Nota | Classificação | Descrição                                                              |
+| ---- | ------------- | ---------------------------------------------------------------------- |
+| 9-10 | Excelente     | Atende todos os requisitos, implementa diferenciais, código exemplar   |
+| 7-8  | Bom           | Atende os requisitos principais, código organizado, poucas falhas      |
+| 5-6  | Satisfatório  | Funciona parcialmente, organização básica, precisa de melhorias        |
+| 3-4  | Insuficiente  | Muitas falhas, código desorganizado, requisitos principais incompletos |
+| 0-2  | Eliminatório  | Não funciona, plágio evidente, ou entrega vazia                        |
 
 Nota mínima para aprovação: 6.0
 
 ### Diferenciação Júnior vs Pleno
 
-| Aspecto | Júnior (esperado) | Pleno (esperado) |
-|---------|-------------------|------------------|
-| Funcionalidades | Obrigatórias funcionando | Obrigatórias + diferenciais |
-| Código | Organizado e legível | Bem estruturado, com patterns claros (service/repository) |
-| SQL | Queries funcionais | Queries otimizadas, parametrizadas, sem SQL injection |
-| Erros | Tratamento básico | Tratamento completo com mensagens claras e status HTTP corretos |
-| Testes | Unitários básicos (pytest) | Unitários + integração, mocks, fixtures |
-| Carrinho | Funciona pro caso comum | Lida com edge cases (estoque, cupom expirado, quantidade 0) |
-| Frontend | Funcional, visual básico | Polido, loading states, feedback visual, responsivo |
+| Aspecto         | Júnior (esperado)          | Pleno (esperado)                                                |
+| --------------- | -------------------------- | --------------------------------------------------------------- |
+| Funcionalidades | Obrigatórias funcionando   | Obrigatórias + diferenciais                                     |
+| Código          | Organizado e legível       | Bem estruturado, com patterns claros (service/repository)       |
+| SQL             | Queries funcionais         | Queries otimizadas, parametrizadas, sem SQL injection           |
+| Erros           | Tratamento básico          | Tratamento completo com mensagens claras e status HTTP corretos |
+| Testes          | Unitários básicos (pytest) | Unitários + integração, mocks, fixtures                         |
+| Carrinho        | Funciona pro caso comum    | Lida com edge cases (estoque, cupom expirado, quantidade 0)     |
+| Frontend        | Funcional, visual básico   | Polido, loading states, feedback visual, responsivo             |
+
+## Rodando localmente, modo DEV:
+
+uvicorn src.main:app --host 0.0.0.0 --port 8000

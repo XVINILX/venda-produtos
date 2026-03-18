@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "../components/Catalog/ProductCard";
 import CategoryFilter from "../components/Catalog/CategoryFilter";
-import { getProducts } from "../services/api";
+import { getProducts, getCategories } from "../services/product.service";
 import { Package } from "lucide-react";
 import "./CatalogPage.css";
 
@@ -17,6 +17,19 @@ const CatalogPage = () => {
     fetchProducts();
   }, [selectedCategory]);
 
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (err) {
+      console.error("Erro ao carregar categorias", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
@@ -24,9 +37,7 @@ const CatalogPage = () => {
       const category = selectedCategory === "todos" ? null : selectedCategory;
       const data = await getProducts(category);
 
-      const uniqueCategories = [...new Set(data.items.map((p) => p.category))];
-      setCategories(uniqueCategories);
-      setProducts(data.items);
+      setProducts(data);
     } catch (err) {
       setError("Erro ao carregar produtos");
       console.error(err);

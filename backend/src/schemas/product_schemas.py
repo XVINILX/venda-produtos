@@ -6,7 +6,6 @@ from datetime import datetime
 class ProductBase(BaseModel):
     """Schema base para produto"""
     name: str = Field(..., description="Nome do produto", min_length=3, max_length=255)
-    description: Optional[str] = Field(None, description="Descrição do produto")
     price: float = Field(..., gt=0, description="Preço do produto", example=99.90)
     category: str = Field(..., description="Categoria do produto", min_length=2)
     stock: int = Field(0, ge=0, description="Quantidade em estoque")
@@ -19,7 +18,6 @@ class ProductCreate(ProductBase):
 class ProductUpdate(BaseModel):
     """Schema para atualização de produto"""
     name: Optional[str] = Field(None, min_length=3, max_length=255)
-    description: Optional[str] = None
     price: Optional[float] = Field(None, gt=0)
     category: Optional[str] = Field(None, min_length=2)
     stock: Optional[int] = Field(None, ge=0)
@@ -93,3 +91,7 @@ class ProductStockResponse(BaseModel):
     requested_quantity: int
     available: bool
     message: str
+
+class CategoriesResponse(BaseModel):
+    """Schema para resposta de categorias"""
+    categories: List[str]

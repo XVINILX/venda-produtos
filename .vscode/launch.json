@@ -1,0 +1,61 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: FastAPI (Uvicorn)",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "src.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload"
+      ],
+      "jinja": true,
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend",
+        "DEBUG": "true"
+      },
+      "envFile": "${workspaceFolder}/backend/.env",
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Backend: FastAPI (Sem reload)",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["src.main:app", "--host", "0.0.0.0", "--port", "8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      },
+      "envFile": "${workspaceFolder}/backend/.env"
+    },
+    {
+      "name": "Backend: Debug com args customizados",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/run.py",
+      "args": [],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      },
+      "envFile": "${workspaceFolder}/backend/.env"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Backend + Frontend",
+      "configurations": ["Backend: FastAPI (Uvicorn)", "Frontend: Vite"]
+    }
+  ]
+}
