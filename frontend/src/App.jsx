@@ -8,6 +8,7 @@ import CatalogPage from "./pages/CatalogPage";
 import CartPage from "./pages/CartPage";
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
+import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 
 function App() {
@@ -20,9 +21,23 @@ function App() {
             <main className="main-content">
               <Routes>
                 <Route path="/" element={<CatalogPage />} />
-                <Route path="/cart" element={<CartPage />} />
+                <Route
+                  path="/cart"
+                  element={
+                    <PrivateRoute>
+                      <CartPage />
+                    </PrivateRoute>
+                  }
+                />
                 <Route path="/login" element={<AuthPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <PrivateRoute>
+                      <DashboardPage />
+                    </PrivateRoute>
+                  }
+                />
               </Routes>
             </main>
             <footer className="footer">

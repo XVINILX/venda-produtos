@@ -32,3 +32,44 @@ class CartResponse(BaseModel):
     total: float
     coupon_code: Optional[str] = None
     coupon_discount: Optional[float] = None
+
+
+from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime
+
+class CartItemResponse(BaseModel):
+    id: int
+    product_id: int
+    product_name: str
+    quantity: int
+    unit_price: float
+    subtotal: float
+
+class CartResponse(BaseModel):
+    cart_id: int
+    status: str
+    items: List[CartItemResponse]
+    total_items: int
+    subtotal: float
+    discount: float
+    total: float
+    coupon_code: Optional[str] = None
+    created_at: Optional[str] = None
+
+class ApplyCouponRequest(BaseModel):
+    code: str
+
+class CheckoutResponse(BaseModel):
+    success: bool
+    message: str
+    cart_id: int
+    total: float
+    items_count: int
+
+class CartHistoryResponse(BaseModel):
+    cart_id: int
+    completed_at: str
+    total: float
+    items_count: int
+    coupon_code: Optional[str] = None

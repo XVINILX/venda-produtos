@@ -17,7 +17,8 @@ class CartRepository:
     def _get_connection(self):
         return psycopg2.connect(self.conn_string)
     
-    def get_cart_items(self) -> List[Dict]:
+
+    def get_cart_items_admin(self) -> List[Dict]:
         """Retorna todos os itens do carrinho com detalhes dos produtos"""
         query = """
             SELECT 
@@ -33,7 +34,38 @@ class CartRepository:
         """
         with self._get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(query)
+                cur.execute(query,)
+                results = cur.fetchall()
+                # Converter Decimals para float
+                items = []
+                for row in results:
+                    item = dict(row)
+                    if 'unit_price' in item and isinstance(item['unit_price'], Decimal):
+                        item['unit_price'] = float(item['unit_price'])
+                    if 'subtotal' in item and isinstance(item['subtotal'], Decimal):
+                        item['subtotal'] = float(item['subtotal'])
+                    items.append(item)
+                return items
+
+
+    def get_cart_items(self, user_id: int) -> List[Dict]:
+        """Retorna todos os itens do carrinho com detalhes dos produtos"""
+        query = """
+            SELECT 
+                ci.id,
+                ci.product_id,
+                p.name as product_name,
+                ci.quantity,
+                p.price as unit_price,
+                (ci.quantity * p.price) as subtotal
+            FROM cart_items ci
+            JOIN products p ON ci.product_id = p.id
+            WHERE ci.user_id = %s
+            ORDER BY ci.created_at
+        """
+        with self._get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(query, (user_id,))
                 results = cur.fetchall()
                 # Converter Decimals para float
                 items = []
@@ -76,16 +108,16 @@ class CartRepository:
                 row = cur.fetchone()
                 return dict(row) if row else None
     
-    def add_item(self, product_id: int, quantity: int) -> Dict:
+    def add_item(self, product_id: int, quantity: int, user_id: int) -> Dict:
         """Adiciona um novo item ao carrinho"""
         query = """
-            INSERT INTO cart_items (product_id, quantity)
-            VALUES (%s, %s)
+            INSERT INTO cart_items (product_id, quantity, user_id)
+            VALUES (%s, %s, %s)
             RETURNING id
         """
         with self._get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(query, (product_id, quantity))
+                cur.execute(query, (product_id, quantity, user_id))
                 conn.commit()
                 new_id = cur.fetchone()['id']
                 return self.get_cart_item(new_id)

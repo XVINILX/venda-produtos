@@ -1,7 +1,14 @@
 // frontend/src/contexts/CartContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
-import * as api from "../services/api";
-import { addToCart } from "../services/cart.service";
+import {
+  getCart,
+  updateCartItem,
+  addToCart,
+  removeFromCart,
+  checkout,
+} from "../services/cart.service";
+
+import { applyCoupon } from "../services/coupon.service";
 
 const CartContext = createContext();
 
@@ -26,14 +33,7 @@ export const CartProvider = ({ children }) => {
 
   // Carregar carrinho do localStorage ao iniciar
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
-        setCart(JSON.parse(savedCart));
-      } catch (e) {
-        console.error("Erro ao carregar carrinho:", e);
-      }
-    }
+    fetchCart();
   }, []);
 
   // Salvar carrinho no localStorage quando mudar
@@ -41,11 +41,34 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  const makeCheckout = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Chamar API de checkout
+      const response = await checkout();
+
+      // Limpar carrinho local após checkout bem-sucedido
+      clearCart();
+
+      // Limpar localStorage
+      localStorage.removeItem("cart");
+
+      return response;
+    } catch (err) {
+      setError("Erro ao finalizar compra");
+      console.error(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchCart = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.getCart();
+      const data = await getCart();
       setCart(data);
     } catch (err) {
       setError("Erro ao carregar carrinho");
@@ -64,6 +87,7 @@ export const CartProvider = ({ children }) => {
     } catch (err) {
       setError("Erro ao adicionar item");
       console.error(err);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -73,7 +97,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const updatedCart = await api.updateCartItem(itemId, quantity);
+      const updatedCart = await updateCartItem(itemId, quantity);
       setCart(updatedCart);
     } catch (err) {
       setError("Erro ao atualizar item");
@@ -87,7 +111,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const updatedCart = await api.removeFromCart(itemId);
+      const updatedCart = await removeFromCart(itemId);
       setCart(updatedCart);
     } catch (err) {
       setError("Erro ao remover item");
@@ -101,7 +125,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const updatedCart = await api.applyCoupon(code);
+      const updatedCart = await applyCoupon(code);
       setCart(updatedCart);
     } catch (err) {
       setError("Cupom inválido");
@@ -131,6 +155,7 @@ export const CartProvider = ({ children }) => {
     removeItem,
     applyCouponToCart,
     clearCart,
+    makeCheckout,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

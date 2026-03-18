@@ -34,16 +34,18 @@ class UserResponse(BaseModel):
     """Schema para resposta de usuário"""
     id: int = Field(..., description="ID do usuário")
     email: EmailStr = Field(..., description="Email do usuário")
-    full_name: Optional[str] = Field(None, description="Nome completo")
+    name: Optional[str] = Field(None, description="Nome completo")
     is_active: bool = Field(True, description="Status da conta")
+    is_admin: bool = Field(True, description="Administrador ou não")
     
     class Config:
         json_schema_extra = {
             "example": {
                 "id": 1,
                 "email": "joao@email.com",
-                "full_name": "João da Silva",
-                "is_active": True
+                "name": "João da Silva",
+                "is_active": True,
+                'is_admin': False
             }
         }
 

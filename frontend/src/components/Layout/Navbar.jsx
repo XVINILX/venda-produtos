@@ -14,12 +14,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import "./Navbar.css";
 
 const Navbar = () => {
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-
   const totalItems = cart.items.reduce((acc, item) => acc + item.quantity, 0);
 
   // Fechar dropdown ao clicar fora
@@ -35,6 +34,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
+    clearCart();
     logout();
     navigate("/");
     setShowDropdown(false);
@@ -67,7 +67,7 @@ const Navbar = () => {
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 <User size={20} />
-                <span>{user?.name?.split(" ")[0]}</span>
+                <span>Olá, {user?.name?.split(" ")[0]}</span>
                 <ChevronDown size={16} />
               </button>
 
@@ -78,13 +78,10 @@ const Navbar = () => {
                     <small>{user?.email}</small>
                   </div>
                   <div className="dropdown-divider"></div>
-                  <Link to="/profile" className="dropdown-item">
-                    <User size={16} />
-                    Meu Perfil
-                  </Link>
-                  <Link to="/orders" className="dropdown-item">
+
+                  <Link to="/dashboard" className="dropdown-item">
                     <Package size={16} />
-                    Meus Pedidos
+                    Dashboard
                   </Link>
                   <div className="dropdown-divider"></div>
                   <button

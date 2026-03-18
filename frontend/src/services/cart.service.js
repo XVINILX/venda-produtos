@@ -72,3 +72,17 @@ export const removeFromCart = async (itemId) => {
     throw error;
   }
 };
+
+/**
+ * Finaliza carrinho atual
+ * @returns {Promise<Object>} Compra finalizada
+ */
+export const checkout = async () => {
+  try {
+    const response = await api.post("/cart/checkout");
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao remover item:", error);
+    throw error;
+  }
+};

@@ -31,7 +31,7 @@ class AdminService:
         total_users = len(users)
         
         # Itens do carrinho (simulando vendas)
-        cart_items = self.cart_repo.get_cart_items()
+        cart_items = self.cart_repo.get_cart_items_admin()
         
         # Calcular receita total (considerando todos os itens como vendidos)
         total_revenue = sum(item['subtotal'] for item in cart_items)
@@ -53,8 +53,8 @@ class AdminService:
     def get_products_with_sales(self) -> List[Dict]:
         """Retorna produtos com dados de venda"""
         products = self.product_repo.get_products()
-        cart_items = self.cart_repo.get_cart_items()
-        
+        cart_items = self.cart_repo.get_cart_items_admin()
+            
         result = []
         for product in products:
             # Calcular vendas deste produto
@@ -72,7 +72,7 @@ class AdminService:
     def get_sales_by_category(self) -> List[Dict]:
         """Retorna vendas agrupadas por categoria"""
         products = self.product_repo.get_products()
-        cart_items = self.cart_repo.get_cart_items()
+        cart_items = self.cart_repo.get_cart_items_admin()
         
         # Agrupar por categoria
         categories = {}
@@ -101,7 +101,7 @@ class AdminService:
     
     def get_daily_sales(self, days: int = 7) -> List[Dict]:
         """Retorna vendas diárias dos últimos X dias"""
-        cart_items = self.cart_repo.get_cart_items()
+        cart_items = self.cart_repo.get_cart_items_admin()
         
         # Agrupar por dia (simplificado - assumindo que todos os itens foram criados hoje)
         today = datetime.now().date()

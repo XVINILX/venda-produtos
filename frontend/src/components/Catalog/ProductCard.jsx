@@ -1,11 +1,10 @@
-// frontend/src/components/Catalog/ProductCard.jsx
 import React, { useState } from "react";
 import { ShoppingCart, AlertCircle, Package } from "lucide-react";
 import { useCart } from "../../contexts/CartContext";
 import "./ProductCard.css";
 
 const ProductCard = ({ product }) => {
-  const { addItem } = useCart();
+  const { addItem, fetchCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
@@ -13,11 +12,17 @@ const ProductCard = ({ product }) => {
     setLoading(true);
     setFeedback(null);
     try {
-      await addItem(product.id, 1);
+      const response = await addItem(product.id, 1);
       setFeedback({ type: "success", message: "Produto adicionado!" });
       setTimeout(() => setFeedback(null), 2000);
+      fetchCart();
     } catch (error) {
-      setFeedback({ type: "error", message: "Erro ao adicionar" });
+      setFeedback({
+        type: "error",
+        message:
+          error.response?.data?.detail || "Erro ao adicionar ao carrinho",
+      });
+      fetchCart();
     } finally {
       setLoading(false);
     }
