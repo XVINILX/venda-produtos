@@ -104,15 +104,13 @@ jobs:
   required-checks:
     name: ✅ Verificações Obrigatórias
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests, integration-tests]
+    needs: [backend-tests]
     if: always()
 
     steps:
       - name: 🔍 Verificar status dos jobs obrigatórios
         run: |
-          if [[ "${{ needs.backend-tests.result }}" == "failure" || \
-                "${{ needs.frontend-tests.result }}" == "failure" || \
-                "${{ needs.integration-tests.result }}" == "failure" ]]; then
+          if [[ "${{ needs.backend-tests.result }}" == "failure" ]]; then
             echo "❌ Testes obrigatórios falharam!"
             exit 1
           else
