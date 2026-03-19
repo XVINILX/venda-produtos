@@ -24,11 +24,12 @@ teste-fullstack-python-react-wisesales/
 ├── docker-compose.yml
 ├── seed.sql
 └── .env.example
-🚀 Passo a Passo para Executar o Backend com Docker
+
+## 🚀 Passo a Passo para Executar o Backend com Docker
 
 1. Clone o repositório
    bash
-   git clone https://github.com/seu-usuario/teste-fullstack-python-react-wisesales.git
+   git clone https://github.com/xvinilx/teste-fullstack-python-react-wisesales.git
    cd teste-fullstack-python-react-wisesales
 2. Configure as variáveis de ambiente
    bash
@@ -64,6 +65,11 @@ ENVIRONMENT=development
 DEBUG=True 3. Inicie os containers com Docker Compose
 bash
 
+# Usuário SuperAdmin
+
+SUPER_ADMIN_EMAIL=admin@wisesales.com
+SUPER_ADMIN_PASSWORD=Admin@123456
+
 # Subir os containers em background
 
 docker-compose up -d
@@ -71,18 +77,6 @@ docker-compose up -d
 # Verificar se os containers estão rodando
 
 docker-compose ps
-Você deve ver algo como:
-
-text
-NAME STATUS PORTS
-teste-fullstack-python-react-wisesales-db-1 up 0.0.0.0:5434->5432/tcp
-teste-fullstack-python-react-wisesales-backend-1 up 0.0.0.0:8000->8000/tcp 4. Verifique se o seed foi carregado corretamente
-bash
-
-# Verificar produtos no banco
-
-docker exec -it teste-fullstack-python-react-wisesales-db-1 psql -U wisesales -d wisesales -c "SELECT id, name, stock FROM products ORDER BY id;"
-Deverá mostrar 6 produtos iniciais.
 
 5. Acesse a API
    API: http://localhost:8000
@@ -90,3 +84,26 @@ Deverá mostrar 6 produtos iniciais.
 Documentação Swagger: http://localhost:8000/docs
 
 Documentação ReDoc: http://localhost:8000/redoc
+
+6 - Acesse o Front
+http://localhost:5173
+
+## 📸 Screenshots
+
+### Página Inicial
+
+![Home Page](screenshots/HOMEPAGE.png)
+
+### Carrinho de Compras
+
+![Carrinho](screenshots/CARRINHO.png)
+![Carrinho](screenshots/CARRINHOCUPOM.png)
+![Carrinho](screenshots/CUPOM_INVALIDO.png)
+
+### Compra Realizada
+
+![Dashboard Admin](screenshots/COMPRAREALIZADA.png)
+
+### DASHBOARD ADMIN
+
+![Dashboard Admin](screenshots/DASHBOARDADMIN.png)
