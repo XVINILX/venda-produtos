@@ -102,8 +102,9 @@ http://localhost:5173
 
 ### Compra Realizada
 
-![Dashboard Admin](screenshots/COMPRAREALIZADA.png)
+![Compra Finalizada](screenshots/COMPRAREALIZADA.png)
 
 ### DASHBOARD ADMIN
 
 ![Dashboard Admin](screenshots/DASHBOARDADMIN.png)
+![Criar novo produto](screenshots/NOVOPRODUTO.png)
