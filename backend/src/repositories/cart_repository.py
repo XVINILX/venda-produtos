@@ -191,6 +191,28 @@ class CartRepository:
                 cur.execute(query, (cart_id,))
                 items = cur.fetchall()
                 return [self._convert_decimals(dict(item)) for item in items]
+            
+    def get_cart_items_admin(self) -> List[Dict]:
+        """Retorna todos os itens de um carrinho com detalhes dos produtos"""
+        query = """
+            SELECT 
+                ci.id,
+                ci.cart_id,
+                ci.product_id,
+                ci.quantity,
+                ci.created_at,
+                p.name as product_name,
+                p.price as unit_price,
+                (ci.quantity * p.price) as subtotal
+            FROM cart_items ci
+            JOIN products p ON ci.product_id = p.id
+            ORDER BY ci.created_at
+        """
+        with self._get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(query)
+                items = cur.fetchall()
+                return [self._convert_decimals(dict(item)) for item in items]
     
     def get_cart_item(self, item_id: int, user_id: int) -> Optional[Dict]:
         """Busca um item do carrinho verificando se pertence ao usuário"""
