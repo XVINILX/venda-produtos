@@ -13,7 +13,11 @@ class ProductBase(BaseModel):
 
 class ProductCreate(ProductBase):
     """Schema para criação de produto"""
-    pass
+    name: Optional[str] = Field(None, min_length=3, max_length=255)
+    price: Optional[float] = Field(None, gt=0)
+    category: Optional[str] = Field(None, min_length=2)
+    stock: Optional[int] = Field(None, ge=0)
+    image_url: Optional[str] = None
 
 class ProductUpdate(BaseModel):
     """Schema para atualização de produto"""
@@ -34,7 +38,6 @@ class ProductResponse(ProductBase):
             "example": {
                 "id": 1,
                 "name": "Notebook Gamer",
-                "description": "Notebook com placa RTX 3060",
                 "price": 4999.99,
                 "category": "eletrônicos",
                 "stock": 10,

@@ -18,14 +18,14 @@ class UserRepository:
     def create(self, email: str, password: str, name: Optional[str] = None, is_admin: bool = False) -> Dict:
         """Insere um novo usuário no banco PostgreSQL"""
         query = """
-            INSERT INTO users (email, password, name, is_admin, created_at)
-            VALUES (%s, %s, %s, %s, NOW())
-            RETURNING id, email, name, is_admin, created_at
+            INSERT INTO users (email, password, name, is_admin, is_active, created_at)
+            VALUES (%s, %s, %s, %s, %s, NOW())
+            RETURNING id, email, name, is_admin, is_active, created_at
         """
         
         with self._get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(query, (email, password, name, is_admin))
+                cur.execute(query, (email, password, name, is_admin, True))
                 conn.commit()
                 result = cur.fetchone()
                 return dict(result) if result else None

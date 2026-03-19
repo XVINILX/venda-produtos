@@ -61,13 +61,8 @@ class ProductService:
                 detail="Estoque não pode ser negativo"
             )
         
-        # Aqui você implementaria a criação no banco
-        # Por enquanto, retornamos um mock
-        return {
-            "id": 999,
-            **product_data.dict(),
-            "created_at": "2024-01-01T12:00:00"
-        }
+        created_product = self.product_repo.create_product(product_data)
+        return created_product
     
     def update_product(self, product_id: int, product_data: ProductUpdate) -> Dict:
         """
@@ -97,7 +92,7 @@ class ProductService:
             )
         
         # Aqui você implementaria a atualização no banco
-        updated = {**existing, **update_data}
+        updated = self.product_repo.update_product(product_id, update_data)
         return updated
     
     def delete_product(self, product_id: int) -> bool:
@@ -112,7 +107,8 @@ class ProductService:
                 detail="Produto não encontrado"
             )
         
-        # Aqui você implementaria a remoção no banco
+        # Aqui você implementaria a remoção no banco    
+        self.product_repo.delete_product(product_id)
         return True
     
     def check_stock(self, product_id: int, requested_quantity: int) -> Dict:
@@ -209,7 +205,6 @@ class ProductService:
         return {
             "id": product['id'],
             "name": product['name'],
-            "description": product.get('description'),
             "price": float(product['price']),
             "category": product['category'],
             "stock": product['stock'],
