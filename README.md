@@ -36,7 +36,7 @@ teste-fullstack-python-react-wisesales/
 
 # Copie o arquivo de exemplo
 
-cp .env.example .env
+cp .env.example ./backend/.env
 
 # Edite o arquivo .env com suas configurações (opcional)
 
