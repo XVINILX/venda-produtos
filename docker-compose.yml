@@ -18,6 +18,19 @@ services:
       timeout: 5s
       retries: 5
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0
+
   backend:
     build: ./backend
     ports:

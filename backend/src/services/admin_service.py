@@ -146,9 +146,10 @@ class AdminService:
             )
         
         # Atualizar (você precisará implementar este método no repositório)
-        # product = self.product_repo.update_stock(product_id, new_stock)
+        product = self.product_repo.set_stock(product_id, new_stock)
+        product = self.product_repo.get_product_by_id(product_id)
         
-        return {**product, "stock": new_stock}
+        return {**product}
     
     def get_top_selling_products(self, limit: int = 5) -> List[Dict]:
         """Retorna os produtos mais vendidos"""
