@@ -1,16 +1,65 @@
+version: "3.8"
+
 services:
   db:
     image: postgres:16-alpine
-    restart: unless-stopped
-    ports:
-      - "${DB_PORT:-5432}:5432"
     environment:
-      POSTGRES_DB: ${DB_NAME:-wisesales}
-      POSTGRES_USER: ${DB_USER:-wisesales}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-wisesales123}
+      POSTGRES_DB: wisesales
+      POSTGRES_USER: wisesales
+      POSTGRES_PASSWORD: wisesales123
+    ports:
+      - "5434:5432" # Host:Container
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wisesales"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=wisesales
+      - DB_USER=wisesales
+      - DB_PASSWORD=wisesales123
+      - DATABASE_URL=postgresql://wisesales:wisesales123@db:5432/wisesales
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo '🔄 Aguardando banco...' &&
+        while ! nc -z db 5432; do
+          sleep 1
+        done &&
+        echo '✅ Banco pronto!' &&
+        echo '🔄 Aplicando migrações...' &&
+        alembic upgrade head &&
+        echo '✅ Migrações concluídas!' &&
+        echo '🚀 Iniciando servidor...' &&
+        uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+      "
 
 volumes:
-  pgdata:
+  postgres_data:
