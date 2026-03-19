@@ -90,3 +90,5 @@ Deverá mostrar 6 produtos iniciais.
 Documentação Swagger: http://localhost:8000/docs
 
 Documentação ReDoc: http://localhost:8000/redoc
+
+Health Check: http://localhost:8000/health
