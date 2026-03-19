@@ -40,11 +40,9 @@ export const AuthProvider = ({ children }) => {
               setUser(JSON.parse(storedUser));
             } else {
               // Token inválido, tentar refresh
-              console.log("refresh token");
             }
           } catch (error) {
             // Token expirado, tentar refresh
-            console.log("refresh token");
           }
         }
       } catch (error) {
@@ -76,7 +74,6 @@ export const AuthProvider = ({ children }) => {
       api.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
 
       const userData = await getCurrentUser();
-      console.log(userData);
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
       return { success: true };

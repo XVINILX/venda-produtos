@@ -109,7 +109,6 @@ const AuthPage = () => {
       // Aqui você faria a chamada real:
       // const response = await api.post('/auth/login', loginData);
       const response = await login(loginData.email, loginData.password);
-      console.log("Login:", loginData);
 
       // Salvar token se "lembrar-me" estiver marcado
       if (rememberMe) {
@@ -145,8 +144,6 @@ const AuthPage = () => {
       // Aqui você faria a chamada real:
       const response = await register(registerData);
 
-      console.log("Registro:", registerData);
-
       // Mostrar mensagem de sucesso e mudar para login
       alert("Conta criada com sucesso! Faça login para continuar.");
       setActiveTab("login");
@@ -157,11 +154,6 @@ const AuthPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSocialLogin = (provider) => {
-    console.log(`Login com ${provider}`);
-    // Implementar lógica de login social
   };
 
   // Carregar email salvo

@@ -126,51 +126,45 @@ const DashboardPage = () => {
       );
     }
   };
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      // Carregar todos os dados em paralelo
+      const [
+        stats,
+        products,
+        dailySales,
+        categorySales,
+        topProducts,
+        lowStock,
+        users,
+      ] = await Promise.all([
+        getDashboardStats(),
+        getProductsWithSales(),
+        getDailySales(7),
+        getSalesByCategory(),
+        getTopSellingProducts(5),
+        getLowStockProducts(5),
+        getAllUsers(),
+      ]);
 
+      setStats(stats);
+      setProducts(products);
+      setDailySales(dailySales);
+      setSalesByCategory(categorySales);
+      setTopProducts(topProducts);
+      setLowStockProducts(lowStock);
+      setUsers(users);
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        // Carregar todos os dados em paralelo
-        const [
-          stats,
-          products,
-          dailySales,
-          categorySales,
-          topProducts,
-          lowStock,
-          users,
-        ] = await Promise.all([
-          getDashboardStats(),
-          getProductsWithSales(),
-          getDailySales(7),
-          getSalesByCategory(),
-          getTopSellingProducts(5),
-          getLowStockProducts(5),
-          getAllUsers(),
-        ]);
-
-        setStats(stats);
-        setProducts(products);
-        setDailySales(dailySales);
-        setSalesByCategory(categorySales);
-        setTopProducts(topProducts);
-        setLowStockProducts(lowStock);
-        setUsers(users);
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadData();
   }, []);
 
-  // Função para exportar dados
-  const handleExportProducts = () => {
-    exportToCSV(products, "produtos_exportados");
-  };
   const handleStockUpdate = async (productId, newStock) => {
     try {
       await updateProductStock(productId, newStock);
@@ -178,6 +172,7 @@ const DashboardPage = () => {
       const updatedProducts = await getProductsWithSales();
       setProducts(updatedProducts);
       setEditingStock(null);
+      loadData();
     } catch (error) {
       console.error("Erro ao atualizar estoque:", error);
     }
@@ -352,44 +347,6 @@ const DashboardPage = () => {
             {/* Gráficos e Tabelas */}
             <div className="charts-section">
               <div className="chart-card">
-                <div className="chart-header">
-                  <h3>Vendas Diárias</h3>
-                  <select
-                    value={dateRange}
-                    onChange={(e) => setDateRange(Number(e.target.value))}
-                    className="date-select"
-                  >
-                    <option value={7}>Últimos 7 dias</option>
-                    <option value={15}>Últimos 15 dias</option>
-                    <option value={30}>Últimos 30 dias</option>
-                  </select>
-                </div>
-                <div className="daily-sales-list">
-                  {dailySales.map((day, index) => (
-                    <div key={index} className="daily-sale-item">
-                      <span className="sale-date">
-                        {new Date(day.date).toLocaleDateString("pt-BR")}
-                      </span>
-                      <div className="sale-bars">
-                        <div
-                          className="sale-bar revenue"
-                          style={{ width: `${(day.revenue / 5000) * 100}%` }}
-                        >
-                          {formatCurrency(day.revenue)}
-                        </div>
-                        <div
-                          className="sale-bar orders"
-                          style={{ width: `${(day.orders / 20) * 100}%` }}
-                        >
-                          {day.orders} pedidos
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="chart-card">
                 <h3>Vendas por Categoria</h3>
                 <div className="category-list">
                   {salesByCategory.map((cat, index) => (
@@ -532,7 +489,11 @@ const DashboardPage = () => {
                             }
                             min="0"
                           />
-                          <button onClick={() => handleStockUpdate(product.id)}>
+                          <button
+                            onClick={() =>
+                              handleStockUpdate(product.id, newStockValue)
+                            }
+                          >
                             <Save size={14} />
                           </button>
                           <button onClick={() => setEditingStock(null)}>
@@ -627,7 +588,7 @@ const DashboardPage = () => {
             />
             <div className="modal-actions">
               <button
-                onClick={() => handleStockUpdate(editingStock)}
+                onClick={() => handleStockUpdate(editingStock, newStockValue)}
                 className="save-btn"
               >
                 Salvar
