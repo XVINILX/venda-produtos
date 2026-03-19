@@ -88,6 +88,9 @@ Documentação ReDoc: http://localhost:8000/redoc
 6 - Acesse o Front
 http://localhost:5173
 
+7 - Rodando os testes
+No container do backend, rode: pytest
+
 ## 📸 Screenshots
 
 ### Página Inicial
