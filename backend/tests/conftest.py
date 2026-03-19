@@ -147,12 +147,12 @@ def test_admin_via_service(db_session):
     )
     
     # Tornar admin diretamente no banco
-    user = db_session.query(User).filter(User.id == user_data["id"]).first()
+
     
     
     # Retornar dados completos
     return {
-        "id": user.id,
+        "id": user_data['id'],
         "email": email,
         "password": password,
         "name": name,
