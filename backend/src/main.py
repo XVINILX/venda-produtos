@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from src.routes import coupon_routes
 from src.database import SessionLocal
 from src.auth.password import hash_password
 from src.models.user import User
@@ -95,6 +96,7 @@ app.include_router(product_routes.router)
 app.include_router(cart_routes.router)
 app.include_router(user_routes.router)
 app.include_router(dashboard_routes.router)
+app.include_router(coupon_routes.router) 
 @app.get("/")
 async def root():
     return {

@@ -1,3 +1,4 @@
+import datetime
 import uuid
 import pytest
 from typing import Generator
@@ -218,11 +219,11 @@ def auth_client_with_multiple_products(auth_client, test_products_via_api):
 @pytest.fixture(scope="function")
 def cart_with_items(auth_client_with_products, auth_client):
     """Cria um carrinho com itens para testes"""
-    product = auth_client_with_products
+    product = auth_client_with_products["Notebook Teste"]
     
     response = auth_client.post(
         "/cart/items",
-        json={"product_id": product.id, "quantity": 2}
+        json={"product_id": product['id'], "quantity": 2}
     )
     assert response.status_code == status.HTTP_200_OK
     
@@ -283,3 +284,70 @@ def test_products_via_api(admin_client):
                     break
     
     return created_products
+
+
+@pytest.fixture(scope="function")
+def test_coupon_percentage(admin_client):
+    """Cria cupom percentual de teste"""
+    coupon_data = {
+        "code": "DESCONTO10",
+        "discount_type": "percentage",
+        "discount_value": 10.00,
+        "active": True,
+        "expires_at": (datetime.datetime.now() + datetime.timedelta(days=30)).isoformat()
+    }
+    
+    response = admin_client.post("/coupons/", json=coupon_data)
+    if response.status_code == 409:  # Se já existe
+        return {"code": "DESCONTO10", "discount_type": "percentage", "discount_value": 10.00}
+    
+    return response.json()
+
+@pytest.fixture(scope="function")
+def test_coupon_fixed(admin_client):
+    """Cria cupom de valor fixo de teste"""
+    coupon_data = {
+        "code": "VALE15",
+        "discount_type": "fixed",
+        "discount_value": 15.00,
+        "active": True,
+        "expires_at": (datetime.datetime.now() + datetime.timedelta(days=30)).isoformat()
+    }
+    
+    response = admin_client.post("/coupons/", json=coupon_data)
+    if response.status_code == 409:
+        return {"code": "VALE15", "discount_type": "fixed", "discount_value": 15.00}
+    
+    return response.json()
+
+@pytest.fixture(scope="function")
+def test_coupon_expired(admin_client):
+    """Cria cupom expirado"""
+    coupon_data = {
+        "code": "EXPIRADO20",
+        "discount_type": "percentage",
+        "discount_value": 20.00,
+        "active": True,
+        "expires_at": (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat()  # Expirado
+    }
+    
+    response = admin_client.post("/coupons/", json=coupon_data)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.fixture(scope="function")
+def test_coupon_inactive(admin_client):
+    """Cria cupom inativo"""
+    coupon_data = {
+        "code": "INATIVO30",
+        "discount_type": "percentage",
+        "discount_value": 30.00,
+        "active": False,  # Inativo
+        "expires_at": (datetime.datetime.now() + datetime.timedelta(days=30)).isoformat()
+    }
+    
+    response = admin_client.post("/coupons/", json=coupon_data)
+    if response.status_code == 409:
+        return {"code": "INATIVO30", "discount_type": "percentage", "discount_value": 30.00}
+    
+    return response.json()
