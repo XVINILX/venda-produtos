@@ -15,7 +15,7 @@ class AuthService:
         self.user_repo = UserRepository()
     
     
-    def register_user(self, email: str, password: str, name: Optional[str] = None) -> Dict:
+    def register_user(self, email: str, password: str, name: Optional[str] = None, is_admin: Optional[bool] = False) -> Dict:
         """
         Regras de negócio para registro de usuário
         """
@@ -43,7 +43,7 @@ class AuthService:
         
         # Criar usuário
         password = hash_password(password)
-        user = self.user_repo.create(email, password, name)
+        user = self.user_repo.create(email, password, name, is_admin)
         
         # Remover dados sensíveis antes de retornar
         return user

@@ -37,12 +37,15 @@ class UserRepository:
             FROM users 
             WHERE email = %s
         """
-        
-        with self._get_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(query, (email,))
-                row = cur.fetchone()
-                return dict(row) if row else None
+        try:
+            with self._get_connection() as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute(query, (email,))
+                    row = cur.fetchone()
+                    return dict(row) if row else None
+        except Exception as e:
+            print(f"❌ Erro ao buscar usuário por email: {e}")
+            return None
     
     def get_by_id(self, user_id: int) -> Optional[Dict]:
         """Busca usuário por ID"""
