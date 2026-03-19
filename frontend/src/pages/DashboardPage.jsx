@@ -1,7 +1,12 @@
-// frontend/src/pages/admin/DashboardPage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import EditProductModal from "../components/admin/EditProductModal";
+import CreateProductModal from "../components/admin/CreateProductModal";
+import {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "../services/product.service";
 import {
   BarChart3,
   Package,
@@ -10,11 +15,7 @@ import {
   DollarSign,
   AlertTriangle,
   TrendingUp,
-  TrendingDown,
   Layers,
-  Calendar,
-  ArrowUp,
-  ArrowDown,
   Edit,
   Save,
   X,
@@ -30,16 +31,10 @@ import {
   updateProductStock,
   exportToCSV,
 } from "../services/dashboard.service";
-import {
-  formatCurrency,
-  formatNumber,
-  calculateGrowth,
-} from "../utils/dashboard_utils";
 import "./DashboardPage.css";
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [products, setProducts] = useState([]);
@@ -52,6 +47,85 @@ const DashboardPage = () => {
   const [editingStock, setEditingStock] = useState(null);
   const [newStockValue, setNewStockValue] = useState(0);
   const [dateRange, setDateRange] = useState(7);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const handleEditProduct = async (productId, updateData) => {
+    try {
+      const updatedProduct = await updateProduct(productId, updateData);
+
+      // Atualizar lista de produtos
+      setProducts((prev) =>
+        prev.map((p) => (p.id === productId ? { ...p, ...updatedProduct } : p)),
+      );
+
+      // Atualizar também nas listas derivadas
+      if (topProducts.some((p) => p.id === productId)) {
+        const updatedTopProducts = await getTopSellingProducts(5);
+        setTopProducts(updatedTopProducts);
+      }
+
+      if (lowStockProducts.some((p) => p.id === productId)) {
+        const updatedLowStock = await getLowStockProducts(5);
+        setLowStockProducts(updatedLowStock);
+      }
+
+      alert("✅ Produto atualizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao editar produto:", error);
+      alert(
+        "❌ Erro ao editar produto: " +
+          (error.response?.data?.detail || "Erro desconhecido"),
+      );
+    }
+  };
+
+  // Função para deletar produto
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm("Tem certeza que deseja excluir este produto?")) {
+      return;
+    }
+
+    try {
+      await deleteProduct(productId);
+
+      // Remover da lista
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+
+      // Atualizar estatísticas
+      const updatedStats = await getDashboardStats();
+      setStats(updatedStats);
+
+      alert("✅ Produto removido com sucesso!");
+    } catch (error) {
+      console.error("Erro ao deletar produto:", error);
+      alert(
+        "❌ Erro ao deletar produto: " +
+          (error.response?.data?.detail || "Erro desconhecido"),
+      );
+    }
+  };
+
+  // Função para criar produto
+  const handleCreateProduct = async (productData) => {
+    try {
+      const newProduct = await createProduct(productData);
+
+      // Atualizar lista de produtos
+      setProducts((prev) => [...prev, newProduct]);
+
+      // Mostrar mensagem de sucesso (opcional)
+      alert("✅ Produto criado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao criar produto:", error);
+      alert(
+        "❌ Erro ao criar produto: " +
+          (error.response?.data?.detail || "Erro desconhecido"),
+      );
+    }
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -83,15 +157,6 @@ const DashboardPage = () => {
         setTopProducts(topProducts);
         setLowStockProducts(lowStock);
         setUsers(users);
-
-        // Calcular crescimento
-        if (dailySales.length >= 2) {
-          const growth = calculateGrowth(
-            dailySales[dailySales.length - 1].revenue,
-            dailySales[dailySales.length - 2].revenue,
-          );
-          setRevenueGrowth(growth);
-        }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
       } finally {
@@ -172,13 +237,6 @@ const DashboardPage = () => {
         >
           <Users size={18} />
           Usuários
-        </button>
-        <button
-          className={`tab-btn ${activeTab === "reports" ? "active" : ""}`}
-          onClick={() => setActiveTab("reports")}
-        >
-          <ShoppingBag size={18} />
-          Relatórios
         </button>
       </div>
 
@@ -430,7 +488,17 @@ const DashboardPage = () => {
           <div className="products-section">
             <div className="section-header">
               <h2>Gerenciar Produtos</h2>
-              <button className="add-product-btn">+ Novo Produto</button>
+              <button
+                className="add-product-btn"
+                onClick={() => setShowCreateModal(true)}
+              >
+                + Novo Produto
+              </button>
+              <CreateProductModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onCreate={handleCreateProduct}
+              />
             </div>
 
             <table className="admin-table products-table">
@@ -482,9 +550,22 @@ const DashboardPage = () => {
                     <td>{product.total_sold}</td>
                     <td>{formatCurrency(product.revenue)}</td>
                     <td>
-                      <button className="action-btn">
+                      <button
+                        className="action-btn edit-btn"
+                        onClick={() => {
+                          setEditingProduct(product);
+                          setShowEditModal(true);
+                        }}
+                      >
                         <Edit size={14} />
                         Editar
+                      </button>
+                      <button
+                        className="action-btn delete-btn"
+                        onClick={() => handleDeleteProduct(product.id)}
+                      >
+                        <X size={14} />
+                        Excluir
                       </button>
                     </td>
                   </tr>
@@ -529,37 +610,6 @@ const DashboardPage = () => {
             </table>
           </div>
         )}
-
-        {activeTab === "reports" && (
-          <div className="reports-section">
-            <h2>Relatórios</h2>
-            <div className="reports-grid">
-              <div className="report-card">
-                <h3>Relatório de Vendas</h3>
-                <p>Período: Últimos 30 dias</p>
-                <div className="report-stats">
-                  <div>Total: {formatCurrency(stats?.total_revenue)}</div>
-                  <div>Pedidos: {stats?.total_orders}</div>
-                </div>
-                <button className="download-btn">Baixar PDF</button>
-              </div>
-
-              <div className="report-card">
-                <h3>Relatório de Estoque</h3>
-                <p>Produtos com estoque baixo: {stats?.products_low_stock}</p>
-                <p>Produtos esgotados: {stats?.products_out_of_stock}</p>
-                <button className="download-btn">Baixar PDF</button>
-              </div>
-
-              <div className="report-card">
-                <h3>Relatório de Usuários</h3>
-                <p>Total: {stats?.total_users} usuários</p>
-                <p>Novos este mês: 0</p>
-                <button className="download-btn">Baixar PDF</button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Modal de ajuste de estoque */}
@@ -592,6 +642,15 @@ const DashboardPage = () => {
           </div>
         </div>
       )}
+      <EditProductModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingProduct(null);
+        }}
+        onEdit={handleEditProduct}
+        product={editingProduct}
+      />
     </div>
   );
 };

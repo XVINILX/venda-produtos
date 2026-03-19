@@ -26,30 +26,19 @@
       "internalConsoleOptions": "neverOpen"
     },
     {
-      "name": "Backend: FastAPI (Sem reload)",
+      "name": "Python: Debug Auth Tests",
       "type": "python",
       "request": "launch",
-      "module": "uvicorn",
-      "args": ["src.main:app", "--host", "0.0.0.0", "--port", "8000"],
-      "cwd": "${workspaceFolder}/backend",
+      "module": "pytest",
+      "args": ["-s"],
       "console": "integratedTerminal",
+      "justMyCode": true,
       "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend"
+        "PYTHONPATH": "${workspaceFolder}/backend",
+        "ENVIRONMENT": "test",
+        "DB_NAME": "test_wisesales"
       },
-      "envFile": "${workspaceFolder}/backend/.env"
-    },
-    {
-      "name": "Backend: Debug com args customizados",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}/backend/run.py",
-      "args": [],
-      "cwd": "${workspaceFolder}/backend",
-      "console": "integratedTerminal",
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend"
-      },
-      "envFile": "${workspaceFolder}/backend/.env"
+      "cwd": "${workspaceFolder}/backend"
     }
   ],
   "compounds": [

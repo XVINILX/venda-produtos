@@ -79,10 +79,12 @@ const Navbar = () => {
                   </div>
                   <div className="dropdown-divider"></div>
 
-                  <Link to="/dashboard" className="dropdown-item">
-                    <Package size={16} />
-                    Dashboard
-                  </Link>
+                  {user?.is_admin && (
+                    <Link to="/dashboard" className="dropdown-item">
+                      <Package size={16} />
+                      Dashboard
+                    </Link>
+                  )}
                   <div className="dropdown-divider"></div>
                   <button
                     onClick={handleLogout}
